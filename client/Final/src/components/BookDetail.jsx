@@ -28,7 +28,7 @@ function BookDetail() {
     const fetchBookDetails = async () => {
     try {
         // First, find the genre this book belongs to
-        const genresResponse = await fetch('http://65.2.34.59:5000/api/genres');
+        const genresResponse = await fetch('http://3.110.179.129:5001/api/genres');
         const genres = await genresResponse.json();
 
         let foundGenre = null;
@@ -36,7 +36,7 @@ function BookDetail() {
 
         // Search through each genre's books
         for (const genre of genres) {
-            const genreResponse = await fetch(`http://65.2.34.59:5000/api/genres/${genre.name}`);
+            const genreResponse = await fetch(`http://3.110.179.129:5001/api/genres/${genre.name}`);
             const genreData = await genreResponse.json();
 
             const book = genreData.books.find(b => b._id === bookId);
@@ -50,7 +50,7 @@ function BookDetail() {
         if (foundBook && foundGenre) {
             // Get detailed book info using viewBook endpoint
             const bookResponse = await fetch(
-                `http://65.2.34.59:5000/api/genres/${foundGenre.name}/books/${foundBook.title}`
+                `http://3.110.179.129:5001/api/genres/${foundGenre.name}/books/${foundBook.title}`
             );
 
             if (!bookResponse.ok) {
@@ -93,7 +93,7 @@ function BookDetail() {
             const userId = JSON.parse(atob(token.split('.')[1])).userId;
 
             const response = await fetch(
-                `http://65.2.34.59:5000/api/genres/${book.genre}/books/${bookId}/rate/${userId}`,
+                `http://3.110.179.129:5001/api/genres/${book.genre}/books/${bookId}/rate/${userId}`,
                 {
                     method: 'POST',
                     headers: {
@@ -123,7 +123,7 @@ function BookDetail() {
             const userId = JSON.parse(atob(token.split('.')[1])).userId;
 
             const response = await fetch(
-                `http://65.2.34.59:5000/api/wishlist/${book.genre}/books/${book.title}/add-to-wishlist/${userId}`,
+                `http://3.110.179.129:5001/api/wishlist/${book.genre}/books/${book.title}/add-to-wishlist/${userId}`,
                 {
                     method: 'POST',
                     headers: {

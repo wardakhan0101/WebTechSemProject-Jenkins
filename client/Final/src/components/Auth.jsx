@@ -17,8 +17,8 @@ function Auth({ onLogin }) {  // Add onLogin prop
     setError('');
 
     const endpoint = isLogin
-      ? 'http://65.2.34.59:5000/api/user/login'
-      : 'http://65.2.34.59:5000/api/user/register';
+      ? 'http://3.110.179.129:5001/api/user/login'
+      : 'http://3.110.179.129:5001/api/user/register';
 
     console.log('Sending request to:', endpoint);
     console.log('With data:', formData);

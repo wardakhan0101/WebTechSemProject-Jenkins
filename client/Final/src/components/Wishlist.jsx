@@ -16,7 +16,7 @@ function Wishlist() {
             const token = localStorage.getItem('token');
             const userId = JSON.parse(atob(token.split('.')[1])).userId;
 
-            const response = await fetch(`http://65.2.34.59:5000/api/wishlist/${userId}`, {
+            const response = await fetch(`http://3.110.179.129:5001/api/wishlist/${userId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -43,7 +43,7 @@ function Wishlist() {
             const userId = JSON.parse(atob(token.split('.')[1])).userId;
 
             const response = await fetch(
-                `http://65.2.34.59:5000/api/wishlist/${genreName}/books/${bookName}/remove-from-wishlist/${userId}`,
+                `http://3.110.179.129:5001/api/wishlist/${genreName}/books/${bookName}/remove-from-wishlist/${userId}`,
                 {
                     method: 'DELETE',
                     headers: {
