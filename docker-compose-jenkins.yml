@@ -7,7 +7,7 @@ services:
     ports:
       - "5001:5000"
     volumes:
-      - ./server:/app
+      - ./server/Bookverse:/app
       - /app/node_modules
     working_dir: /app
     command: sh -c "npm install && npm start"
