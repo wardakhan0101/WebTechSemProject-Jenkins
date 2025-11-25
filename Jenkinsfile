@@ -15,17 +15,6 @@ pipeline {
             }
         }
         
-        stage('Build Frontend') {
-            steps {
-                echo 'Building React frontend...'
-                sh '''
-                    cd ${WORKSPACE}/client
-                    npm install
-                    npm run build
-                '''
-            }
-        }
-        
         stage('Stop Old Containers') {
             steps {
                 echo 'Stopping any existing Jenkins containers...'
@@ -46,10 +35,10 @@ pipeline {
             }
         }
         
-        stage('Wait for MongoDB') {
+        stage('Wait for Services') {
             steps {
-                echo 'Waiting for MongoDB to be ready...'
-                sh 'sleep 15'
+                echo 'Waiting for services to be ready...'
+                sh 'sleep 20'
             }
         }
         
