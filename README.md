@@ -225,3 +225,4 @@ WebTechSemProject/
 This project is for educational purposes.
 
 - [GitHub Repository](https://github.com/Romaisa-Munir/WebTechSemProject)
+# Testing GitHub push auto-trigger
