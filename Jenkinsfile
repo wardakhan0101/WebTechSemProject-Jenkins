@@ -11,15 +11,17 @@ pipeline {
             steps {
                 echo 'Cloning repository from GitHub...'
                 git branch: 'main',
-                    url: 'https://github.com/Romaisa-Munir/WebTechSemProject.git'
+                    url: 'https://github.com/wardakhan0101/WebTechSemProject-Jenkins.git'
             }
         }
         
-        stage('Prepare Environment') {
+        stage('Build Frontend') {
             steps {
-                echo 'Copying docker-compose file...'
+                echo 'Building React frontend...'
                 sh '''
-                    cp /home/ubuntu/jenkins-bookverse/docker-compose-jenkins.yml ${WORKSPACE}/
+                    cd ${WORKSPACE}/client
+                    npm install
+                    npm run build
                 '''
             }
         }
@@ -34,7 +36,7 @@ pipeline {
             }
         }
         
-        stage('Build & Deploy') {
+        stage('Deploy Containers') {
             steps {
                 echo 'Starting containers with docker-compose...'
                 sh '''
@@ -44,11 +46,17 @@ pipeline {
             }
         }
         
+        stage('Wait for MongoDB') {
+            steps {
+                echo 'Waiting for MongoDB to be ready...'
+                sh 'sleep 15'
+            }
+        }
+        
         stage('Import Database') {
             steps {
                 echo 'Importing database data...'
                 sh '''
-                    sleep 10
                     docker exec jenkins-bookverse-mongodb mongoimport \
                         --db bookverse \
                         --collection books \
@@ -85,7 +93,11 @@ pipeline {
                 echo 'Verifying containers are running...'
                 sh '''
                     docker-compose -f ${WORKSPACE}/docker-compose-jenkins.yml ps
-                    echo "Application accessible at http://65.2.38.228:8081"
+                    echo "=========================================="
+                    echo "✅ Application accessible at:"
+                    echo "   Frontend: http://3.110.179.129:3001"
+                    echo "   Backend:  http://3.110.179.129:5001"
+                    echo "=========================================="
                 '''
             }
         }
@@ -93,11 +105,12 @@ pipeline {
     
     post {
         success {
-            echo 'Pipeline completed successfully!'
+            echo '✅ Pipeline completed successfully!'
+            echo 'Jenkins automated build and deployment finished.'
         }
         failure {
-            echo 'Pipeline failed. Check logs for details.'
-            sh 'docker-compose -f ${WORKSPACE}/docker-compose-jenkins.yml logs'
+            echo '❌ Pipeline failed. Check logs for details.'
+            sh 'docker-compose -f ${WORKSPACE}/docker-compose-jenkins.yml logs || true'
         }
     }
 }
