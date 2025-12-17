@@ -5,8 +5,8 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 import time
 
-FRONTEND_URL = "http://13.235.74.237:5173"
-BACKEND_URL = "http://13.235.74.237:5000"
+FRONTEND_URL = "http://172.31.8.94:5173"
+BACKEND_URL = "http://172.31.8.94:5000"
 
 @pytest.fixture
 def driver():
