@@ -50,7 +50,7 @@ pipeline {
             }
         }
         
-        stage('Publish Test Results') {
+/*      stage('Publish Test Results') {
             steps {
                 echo 'Publishing test results...'
                 publishHTML([
@@ -62,7 +62,8 @@ pipeline {
                     reportName: 'Selenium Test Report'
                 ])
             }
-        }
+        } 
+*/
     }
     
     post {
@@ -87,7 +88,7 @@ pipeline {
                     <p><a href="${env.BUILD_URL}Selenium_20Test_20Report/">View Test Report</a></p>
                     <p><a href="${env.BUILD_URL}console">View Console Output</a></p>
                 """,
-                to: '${CHANGE_AUTHOR_EMAIL}',
+                to: "${env.GIT_COMMITTER_EMAIL}",
                 mimeType: 'text/html',
                 attachLog: false
             )
@@ -110,7 +111,7 @@ pipeline {
                     <p><a href="${env.BUILD_URL}Selenium_20Test_20Report/">View Test Report</a></p>
                     <p><a href="${env.BUILD_URL}console">View Console Output</a></p>
                 """,
-                to: '${CHANGE_AUTHOR_EMAIL}',
+                to: "${env.GIT_COMMITTER_EMAIL}",
                 mimeType: 'text/html',
                 attachLog: true
             )
