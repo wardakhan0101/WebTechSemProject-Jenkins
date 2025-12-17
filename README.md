@@ -228,3 +228,4 @@ This project is for educational purposes.
 # Testing GitHub push auto-trigger
 # Testing Jenkins Pipeline
 Testing complete pipeline with email
+Testing complete pipeline with email
