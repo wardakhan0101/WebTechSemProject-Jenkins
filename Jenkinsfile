@@ -1,12 +1,12 @@
 pipeline {
     agent any
-    
+
     environment {
         DOCKER_IMAGE = 'selenium-python-tests:latest'
-        FRONTEND_URL = 'http://13.235.74.237:5173'
-        BACKEND_URL = 'http://13.235.74.237:5000'
+        FRONTEND_URL = 'http://172.31.8.94:5173'
+        BACKEND_URL = 'http://172.31.8.94:5000'
     }
-    
+
     stages {
         stage('Checkout') {
             steps {
@@ -14,7 +14,7 @@ pipeline {
                 checkout scm
             }
         }
-        
+
         stage('Verify Environment') {
             steps {
                 echo 'Verifying environment...'
@@ -26,7 +26,7 @@ pipeline {
                 '''
             }
         }
-        
+
         stage('Run Selenium Tests') {
             steps {
                 echo 'Running Selenium tests in Docker container...'
@@ -49,72 +49,69 @@ pipeline {
                 }
             }
         }
-        
-/*      stage('Publish Test Results') {
-            steps {
-                echo 'Publishing test results...'
-                publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: 'selenium_tests',
-                    reportFiles: 'report.html',
-                    reportName: 'Selenium Test Report'
-                ])
-            }
-        } 
-*/
     }
-    
+
     post {
         always {
             echo 'Cleaning up workspace...'
         }
-        
+
         success {
-            echo 'Tests passed successfully! Sending email...'
-            emailext(
-                subject: "✅ Jenkins Build Success: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-                body: """
-                    <h2>Build Success!</h2>
-                    <p><strong>Job:</strong> ${env.JOB_NAME}</p>
-                    <p><strong>Build Number:</strong> ${env.BUILD_NUMBER}</p>
-                    <p><strong>Status:</strong> SUCCESS</p>
-                    <p><strong>Duration:</strong> ${currentBuild.durationString}</p>
-                    <p><strong>Commit:</strong> ${env.GIT_COMMIT}</p>
-                    <p><strong>Branch:</strong> ${env.GIT_BRANCH}</p>
-                    <br>
-                    <p>All Selenium tests passed successfully!</p>
-                    <p><a href="${env.BUILD_URL}Selenium_20Test_20Report/">View Test Report</a></p>
-                    <p><a href="${env.BUILD_URL}console">View Console Output</a></p>
-                """,
-                to: "${env.GIT_COMMITTER_EMAIL}",
-                mimeType: 'text/html',
-                attachLog: false
-            )
+            script {
+                def committerEmail = sh(
+                    script: "git log -1 --pretty=format:'%ae'",
+                    returnStdout: true
+                ).trim()
+                
+                echo "Tests passed successfully! Sending email to ${committerEmail}..."
+                emailext(
+                    subject: "✅ Jenkins Build Success: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+                    body: """
+                        <h2>Build Success!</h2>
+                        <p><strong>Job:</strong> ${env.JOB_NAME}</p>
+                        <p><strong>Build Number:</strong> ${env.BUILD_NUMBER}</p>
+                        <p><strong>Status:</strong> SUCCESS ✅</p>
+                        <p><strong>Duration:</strong> ${currentBuild.durationString}</p>
+                        <p><strong>Commit:</strong> ${env.GIT_COMMIT}</p>
+                        <p><strong>Committer:</strong> ${committerEmail}</p>
+                        <br>
+                        <p><strong>All 15 Selenium tests passed successfully!</strong></p>
+                        <p><a href="${env.BUILD_URL}console">View Console Output</a></p>
+                    """,
+                    to: "${committerEmail}",
+                    mimeType: 'text/html',
+                    attachLog: false
+                )
+            }
         }
-        
+
         failure {
-            echo 'Tests failed! Sending email...'
-            emailext(
-                subject: "❌ Jenkins Build Failed: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-                body: """
-                    <h2>Build Failed!</h2>
-                    <p><strong>Job:</strong> ${env.JOB_NAME}</p>
-                    <p><strong>Build Number:</strong> ${env.BUILD_NUMBER}</p>
-                    <p><strong>Status:</strong> FAILURE</p>
-                    <p><strong>Duration:</strong> ${currentBuild.durationString}</p>
-                    <p><strong>Commit:</strong> ${env.GIT_COMMIT}</p>
-                    <p><strong>Branch:</strong> ${env.GIT_BRANCH}</p>
-                    <br>
-                    <p>Some tests failed. Please check the logs.</p>
-                    <p><a href="${env.BUILD_URL}Selenium_20Test_20Report/">View Test Report</a></p>
-                    <p><a href="${env.BUILD_URL}console">View Console Output</a></p>
-                """,
-                to: "${env.GIT_COMMITTER_EMAIL}",
-                mimeType: 'text/html',
-                attachLog: true
-            )
+            script {
+                def committerEmail = sh(
+                    script: "git log -1 --pretty=format:'%ae'",
+                    returnStdout: true
+                ).trim()
+                
+                echo "Tests failed! Sending email to ${committerEmail}..."
+                emailext(
+                    subject: "❌ Jenkins Build Failed: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+                    body: """
+                        <h2>Build Failed!</h2>
+                        <p><strong>Job:</strong> ${env.JOB_NAME}</p>
+                        <p><strong>Build Number:</strong> ${env.BUILD_NUMBER}</p>
+                        <p><strong>Status:</strong> FAILURE ❌</p>
+                        <p><strong>Duration:</strong> ${currentBuild.durationString}</p>
+                        <p><strong>Commit:</strong> ${env.GIT_COMMIT}</p>
+                        <p><strong>Committer:</strong> ${committerEmail}</p>
+                        <br>
+                        <p><strong>Some tests failed. Please check the logs.</strong></p>
+                        <p><a href="${env.BUILD_URL}console">View Console Output</a></p>
+                    """,
+                    to: "${committerEmail}",
+                    mimeType: 'text/html',
+                    attachLog: true
+                )
+            }
         }
     }
 }
